@@ -8,8 +8,7 @@ workflows:
         - push
         - pull_request
       branch_patterns:
-        - main
-        - develop
+        pattern: main
     environment:
       vars:
         NODE_VERSION: 18
