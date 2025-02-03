@@ -1,30 +1,49 @@
 workflows:
-  react_native_app:
-    name: React Native CI/CD
+  android_release:
+    name: Build Android APK & AAB
     max_build_duration: 60
     instance_type: mac_mini_m1  # Peut être changé selon ton plan Codemagic
+
     triggering:
       events:
         - push
         - pull_request
       branch_patterns:
-        pattern: main
+        - pattern: main
+
     environment:
       vars:
         NODE_VERSION: 18
+        JAVA_VERSION: 17
+        GRADLEW_PATH: android/gradlew
       flutter: stable
+      android_signing:
+        - keystore_reference: $CM_KEYSTORE_REFERENCE
+          keystore_password: $CM_KEYSTORE_PASSWORD
+          key_alias: $CM_KEY_ALIAS
+          key_password: $CM_KEY_PASSWORD
+
     scripts:
       - name: Installer les dépendances
         script: npm install
-      - name: Linter et tests unitaires
+
+      - name: Vérifier le code et exécuter les tests unitaires
         script: |
           npm run lint
           npm test
-      - name: Générer le bundle JavaScript
-        script: npm run build
+
+      - name: Build APK et AAB
+        script: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleRelease
+          ./gradlew bundleRelease
+
     artifacts:
-      - build/**/*
+      - android/app/build/outputs/**/*.apk
+      - android/app/build/outputs/**/*.aab
+
     publishing:
       email:
         recipients:
-          - "ouagal.mahamat@yahoo.com"
+          - "ton.email@example.com"
