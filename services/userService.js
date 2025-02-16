@@ -2,21 +2,23 @@ import AsyncStorage from '@react-native-async-storage/async-storage'; // Importe
 import api from './api'; // Importer l'instance Axios
 
 // Fonction pour créer un utilisateur (POST)
+
 export const createUser = async (user) => {
     try {
         const response = await api.post('/users/register', user);
-        return response.data; // Retourner l'utilisateur créé
+        return response.data;
     } catch (error) {
         if (error.response && error.response.status === 400) {
-            // Vérification du code d'erreur 400 (Bad Request) qui signifie que le username existe déjà
-            console.error('Erreur lors de la création de l\'utilisateur :', error.response.data);
-            // Vous pouvez ici retourner un message d'erreur spécifique au frontend
-            return { error: error.response.data };  // Par exemple, retournez l'erreur sous forme d'objet
+            // Aplatir l'objet d'erreur
+            const errorMessage = error.response.data.error || error.response.data;
+            console.error('Erreur lors de la création de l\'utilisateur :', errorMessage);
+            return { error: errorMessage };
         }
-        console.error('Error creating user:', error);
+        console.error('Erreur inconnue lors de la création de l\'utilisateur');
         return null;
     }
 };
+
 
 // Fonction pour se connecter (POST)
 export const loginUser = async (username, password) => {

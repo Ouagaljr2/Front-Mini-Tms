@@ -23,7 +23,6 @@ export const searchTrips = async (origin, destination) => {
 export const addTrip = async (trip, driverId, vehicleId) => {
     try {
         const response = await api.post(`/trips?driverId=${driverId}&vehicleId=${vehicleId}`, trip);
-        console.log('Response on est ici:', response);
         return response.status === 200;
     } catch (error) {
         console.error('Error adding trip:', error);
@@ -32,7 +31,6 @@ export const addTrip = async (trip, driverId, vehicleId) => {
 };
 
 export const updateTrip = async (id, trip) => {
-    console.log('Update trip:', trip);
     try {
         const response = await api.put(`/trips/${id}`, trip);
         return response.status === 200;
