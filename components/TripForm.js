@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { View, TextInput, Button, StyleSheet, Text } from 'react-native';
+import { View, StyleSheet } from 'react-native';
+import { Button, TextInput, Card, useTheme, Text, ActivityIndicator } from 'react-native-paper';
+import { Picker } from '@react-native-picker/picker';
 import { addTrip, updateTrip } from '../services/tripService';
 import { fetchDrivers } from '../services/driverService';
 import { fetchVehicles } from '../services/vehicleService';
-import { Picker } from '@react-native-picker/picker';
 
 const TripForm = ({ fetchTrips, initialTrip = null, onClose }) => {
+    const { colors } = useTheme();
     const cities = [
         'Paris', 'Lyon', 'Marseille', 'Toulouse', 'Nice',
         'Nantes', 'Strasbourg', 'Montpellier', 'Bordeaux', 'Lille',
@@ -79,120 +81,128 @@ const TripForm = ({ fetchTrips, initialTrip = null, onClose }) => {
     };
 
     if (loading) {
-        return <Text style={styles.loadingText}>Chargement...</Text>;
+        return <ActivityIndicator animating={true} color={colors.primary} />;
     }
 
     return (
-        <View style={styles.container}>
-            <View style={styles.form}>
-                {errorMessage && <Text style={styles.errorText}>{errorMessage}</Text>}
-
-                <Picker
-                    selectedValue={origin}
-                    onValueChange={(value) => setOrigin(value)}
-                    style={styles.input}
-                >
-                    <Picker.Item label="Sélectionnez une origine" value="" />
-                    {cities.map(city => (
-                        <Picker.Item key={city} label={city} value={city} />
-                    ))}
-                </Picker>
-
-                <Picker
-                    selectedValue={destination}
-                    onValueChange={(value) => setDestination(value)}
-                    style={styles.input}
-                >
-                    <Picker.Item label="Sélectionnez une destination" value="" />
-                    {cities.filter(city => city !== origin).map(city => (
-                        <Picker.Item key={city} label={city} value={city} />
-                    ))}
-                </Picker>
-
-                <TextInput
-                    style={[styles.input, styles.dateInput]}
-                    placeholder="Sélectionnez une date"
-                    value={date}
-                    onChangeText={setDate}
-                    keyboardType="default"
+        <View style={styles.overlay}>
+            <Card style={styles.card}>
+                <Card.Title
+                    title={initialTrip ? 'Modifier Trajet' : 'Ajouter Trajet'}
+                    titleStyle={styles.cardTitle}
                 />
+                <Card.Content>
+                    {errorMessage && <Text style={styles.errorText}>{errorMessage}</Text>}
 
-                {initialTrip ? (
-                    <>
-                        <Text style={styles.input}>Conducteur : {driver}</Text>
-                        <Text style={styles.input}>Véhicule : {vehicle}</Text>
-                    </>
-                ) : (
-                    <>
-                        <Picker
-                            selectedValue={driver}
-                            onValueChange={setDriver}
-                            style={styles.input}
-                        >
-                            <Picker.Item label="Sélectionnez un conducteur" value="" />
-                            {drivers.map((d) => (
-                                <Picker.Item key={d.id} label={d.name} value={d.id} />
-                            ))}
-                        </Picker>
-                        <Picker
-                            selectedValue={vehicle}
-                            onValueChange={setVehicle}
-                            style={styles.input}
-                        >
-                            <Picker.Item label="Sélectionnez un véhicule" value="" />
-                            {vehicles.map((v) => (
-                                <Picker.Item key={v.id} label={v.registrationNumber} value={v.id} />
-                            ))}
-                        </Picker>
-                    </>
-                )}
+                    <Picker
+                        selectedValue={origin}
+                        onValueChange={(value) => setOrigin(value)}
+                        style={styles.input}
+                    >
+                        <Picker.Item label="Sélectionnez une origine" value="" />
+                        {cities.map(city => (
+                            <Picker.Item key={city} label={city} value={city} />
+                        ))}
+                    </Picker>
 
-                <Button title={initialTrip ? 'Mettre à jour' : 'Ajouter'} onPress={handleSubmit} />
-                {onClose && <Button title="Annuler" color="red" onPress={onClose} />}
-            </View>
+                    <Picker
+                        selectedValue={destination}
+                        onValueChange={(value) => setDestination(value)}
+                        style={styles.input}
+                    >
+                        <Picker.Item label="Sélectionnez une destination" value="" />
+                        {cities.filter(city => city !== origin).map(city => (
+                            <Picker.Item key={city} label={city} value={city} />
+                        ))}
+                    </Picker>
+
+                    <TextInput
+                        label="Date"
+                        value={date}
+                        onChangeText={setDate}
+                        style={styles.input}
+                        mode="outlined"
+                    />
+
+                    {initialTrip ? (
+                        <>
+                            <Text style={styles.input}>Conducteur : {driver}</Text>
+                            <Text style={styles.input}>Véhicule : {vehicle}</Text>
+                        </>
+                    ) : (
+                        <>
+                            <Picker
+                                selectedValue={driver}
+                                onValueChange={setDriver}
+                                style={styles.input}
+                            >
+                                <Picker.Item label="Sélectionnez un conducteur" value="" />
+                                {drivers.map((d) => (
+                                    <Picker.Item key={d.id} label={d.name} value={d.id} />
+                                ))}
+                            </Picker>
+                            <Picker
+                                selectedValue={vehicle}
+                                onValueChange={setVehicle}
+                                style={styles.input}
+                            >
+                                <Picker.Item label="Sélectionnez un véhicule" value="" />
+                                {vehicles.map((v) => (
+                                    <Picker.Item key={v.id} label={v.registrationNumber} value={v.id} />
+                                ))}
+                            </Picker>
+                        </>
+                    )}
+
+                    <Button
+                        mode="contained"
+                        onPress={handleSubmit}
+                        style={styles.button}
+                        loading={loading}
+                        disabled={loading}
+                    >
+                        {initialTrip ? 'Mettre à jour' : 'Ajouter'}
+                    </Button>
+                    <Button
+                        mode="outlined"
+                        onPress={onClose}
+                        style={styles.button}
+                        color={colors.error}
+                    >
+                        Annuler
+                    </Button>
+                </Card.Content>
+            </Card>
         </View>
     );
 };
 
 const styles = StyleSheet.create({
-    container: {
+    overlay: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#f2f2f2',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
-    form: {
+    card: {
         width: '90%',
-        padding: 20,
-        backgroundColor: '#fff',
-        borderRadius: 8,
-        shadowColor: '#000',
-        shadowOpacity: 0.2,
-        shadowOffset: { width: 0, height: 4 },
-        shadowRadius: 5,
+        maxWidth: 400,
+    },
+    cardTitle: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        textAlign: 'center',
     },
     input: {
-        height: 50,
-        borderColor: '#ccc',
-        borderWidth: 1,
         marginBottom: 10,
-        paddingLeft: 10,
-        borderRadius: 5,
-    },
-    dateInput: {
-        height: 40,
-        paddingLeft: 10,
-        marginBottom: 10,
-    },
-    loadingText: {
-        textAlign: 'center',
-        marginTop: 20,
-        fontSize: 16,
     },
     errorText: {
         color: 'red',
-        marginBottom: 10,
         textAlign: 'center',
+        marginBottom: 10,
+    },
+    button: {
+        marginTop: 10,
     },
 });
 

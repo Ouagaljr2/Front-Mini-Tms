@@ -1,59 +1,54 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, StyleSheet, Text, Dimensions } from 'react-native';
+import { View, StyleSheet } from 'react-native';
+import { Button, TextInput, Card, useTheme, Text } from 'react-native-paper';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { addDriver, updateDriver } from '../services/driverService';
 
-const { width } = Dimensions.get('window');
-
 const DriverForm = ({ fetchDrivers, initialDriver = null, onClose }) => {
+    const { colors } = useTheme();
     const [name, setName] = useState(initialDriver ? initialDriver.name : '');
     const [licenseNumber, setLicenseNumber] = useState(initialDriver ? initialDriver.licenseNumber : 'FR-');
     const [phoneNumber, setPhoneNumber] = useState(initialDriver ? initialDriver.phoneNumber : '+33');
     const [email, setEmail] = useState(initialDriver ? initialDriver.email : '');
-    const [status] = useState('Disponible'); // Statut fixe, non modifiable
-    const [error, setError] = useState(null); // État pour stocker les erreurs
+    const [status] = useState('Disponible');
+    const [error, setError] = useState(null);
+    const [loading, setLoading] = useState(false);
 
-    // Fonction pour valider et formater le numéro de licence
     const handleLicenseChange = (text) => {
         if (text.length <= 8 && text.startsWith('FR-')) {
-            setLicenseNumber(text.toUpperCase()); // Enforcer la casse majuscule
-            setError(null); // Réinitialiser l'erreur
+            setLicenseNumber(text.toUpperCase());
+            setError(null);
         } else {
             setError('Le numéro de licence doit commencer par "FR-" et être de 8 chiffres.');
         }
     };
 
-    // Fonction pour valider et formater le numéro de téléphone
     const handlePhoneChange = (text) => {
-        // Si le texte commence par +33 et est suivi de 9 chiffres
         if (text.startsWith('+33') && text.length <= 13 && !isNaN(text.slice(4))) {
             setPhoneNumber(text);
-            setError(null); // Réinitialiser l'erreur
-        } else if (text.startsWith('+33') && text.length > 13) {
-            setError('Le numéro de téléphone ne peut pas dépasser 13 caractères.');
+            setError(null);
         } else {
             setError('Le numéro de téléphone doit commencer par "+33" suivi de 8 chiffres.');
         }
     };
 
-    // Fonction pour valider l'email avec une expression régulière
     const handleEmailChange = (text) => {
         setEmail(text);
-        // Validation de l'email
         const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
         if (!emailRegex.test(text)) {
             setError('L\'email n\'est pas valide.');
         } else {
-            setError(null); // Réinitialiser l'erreur
+            setError(null);
         }
     };
 
     const handleSubmit = async () => {
-        // Vérification si tous les champs sont remplis
         if (!name || !licenseNumber || !phoneNumber || !email) {
             setError('Tous les champs doivent être remplis.');
             return;
         }
 
+        setLoading(true);
         const driverData = { name, licenseNumber, phoneNumber, email, status };
         let success;
         if (initialDriver) {
@@ -61,6 +56,7 @@ const DriverForm = ({ fetchDrivers, initialDriver = null, onClose }) => {
         } else {
             success = await addDriver(driverData);
         }
+        setLoading(false);
 
         if (success) {
             fetchDrivers();
@@ -72,95 +68,102 @@ const DriverForm = ({ fetchDrivers, initialDriver = null, onClose }) => {
 
     return (
         <View style={styles.overlay}>
-            <View style={styles.form}>
-                <Text style={styles.title}>{initialDriver ? 'Modifier Conducteur' : 'Ajouter Conducteur'}</Text>
+            <Card style={styles.card}>
+                <Card.Title
+                    title={initialDriver ? 'Modifier Conducteur' : 'Ajouter Conducteur'}
+                    titleStyle={styles.cardTitle}
+                />
+                <Card.Content>
+                    {error && <Text style={styles.errorText}>{error}</Text>}
 
-                {/* Affichage de l'erreur */}
-                {error && <Text style={styles.errorText}>{error}</Text>}
+                    <TextInput
+                        label="Nom"
+                        value={name}
+                        onChangeText={setName}
+                        style={styles.input}
+                        mode="outlined"
+                    />
+                    <TextInput
+                        label="Numéro de licence (ex: FR-12345678)"
+                        value={licenseNumber}
+                        onChangeText={handleLicenseChange}
+                        style={styles.input}
+                        mode="outlined"
+                        maxLength={8}
+                    />
+                    <TextInput
+                        label="Numéro de téléphone (+33 612345678)"
+                        value={phoneNumber}
+                        onChangeText={handlePhoneChange}
+                        style={styles.input}
+                        mode="outlined"
+                        maxLength={12}
+                        keyboardType="phone-pad"
+                    />
+                    <TextInput
+                        label="Email"
+                        value={email}
+                        onChangeText={handleEmailChange}
+                        style={styles.input}
+                        mode="outlined"
+                        keyboardType="email-address"
+                    />
+                    <Text style={styles.statusText}>Statut: {status}</Text>
 
-                <TextInput
-                    style={styles.input}
-                    placeholder="Nom"
-                    value={name}
-                    onChangeText={setName}
-                />
-                <TextInput
-                    style={styles.input}
-                    placeholder="Numéro de licence (ex: FR-12345678)"
-                    value={licenseNumber}
-                    onChangeText={handleLicenseChange}
-                    maxLength={8}  // Limiter la taille à 8 caractères pour la licence
-                />
-                <TextInput
-                    style={styles.input}
-                    placeholder="Numéro de téléphone (+33 612345678)"
-                    value={phoneNumber}
-                    onChangeText={handlePhoneChange}
-                    maxLength={12}  // Limiter la taille à 13 caractères pour le téléphone
-                    keyboardType="phone-pad" // Permet de faire apparaître le pavé numérique
-                />
-                <TextInput
-                    style={styles.input}
-                    placeholder="Email"
-                    value={email}
-                    onChangeText={handleEmailChange}
-                />
-                <Text style={styles.statusText}>Statut: {status}</Text>
-
-                <Button title={initialDriver ? 'Mettre à jour' : 'Ajouter'} onPress={handleSubmit} />
-                {onClose && <Button title="Annuler" color="red" onPress={onClose} />}
-            </View>
+                    <Button
+                        mode="contained"
+                        onPress={handleSubmit}
+                        style={styles.button}
+                        loading={loading}
+                        disabled={loading}
+                    >
+                        {initialDriver ? 'Mettre à jour' : 'Ajouter'}
+                    </Button>
+                    <Button
+                        mode="outlined"
+                        onPress={onClose}
+                        style={styles.button}
+                        color={colors.error}
+                    >
+                        Annuler
+                    </Button>
+                </Card.Content>
+            </Card>
         </View>
     );
 };
 
 const styles = StyleSheet.create({
     overlay: {
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
+        flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        zIndex: 10,
     },
-    form: {
+    card: {
         width: '90%',
-        position: 'relative',
         maxWidth: 400,
-        padding: 20,
-        backgroundColor: '#fff',
-        borderRadius: 10,
-        shadowColor: '#000',
-        shadowOpacity: 0.2,
-        shadowOffset: { width: 0, height: 4 },
-        shadowRadius: 5,
-        elevation: 5,
     },
-    title: {
-        fontSize: 18,
+    cardTitle: {
+        fontSize: 20,
         fontWeight: 'bold',
-        marginBottom: 15,
         textAlign: 'center',
     },
     input: {
-        height: 40,
-        borderColor: '#ccc',
-        borderWidth: 1,
         marginBottom: 10,
-        paddingLeft: 10,
-        borderRadius: 5,
     },
     statusText: {
-        marginBottom: 15,
-        color: '#555',
         textAlign: 'center',
+        marginBottom: 10,
+        color: '#555',
     },
     errorText: {
         color: 'red',
-        marginBottom: 10,
         textAlign: 'center',
+        marginBottom: 10,
+    },
+    button: {
+        marginTop: 10,
     },
 });
 
