@@ -11,7 +11,6 @@ import UserScreen from './screens/UserScreen';
 import DashboardScreen from './screens/DashboardScreen';
 import VehiclesScreen from './screens/VehiclesScreen';
 import TripScreen from './screens/TripScreen';
-import { isAuthenticated } from './services/userService'; // Fonction pour vérifier l'authentification
 
 const Tab = createMaterialTopTabNavigator();
 

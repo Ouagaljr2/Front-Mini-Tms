@@ -17,10 +17,8 @@ const UserForm = ({ onLoginSuccess, onClose }) => {
 
         if (success) {
             onLoginSuccess();
-            console.log('onLoginSuccess appelé avec succès');
         } else {
             setError('Nom d\'utilisateur ou mot de passe incorrect');
-            console.log('Login échoué');
         }
     };
 

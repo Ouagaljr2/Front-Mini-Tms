@@ -23,19 +23,14 @@ export const createUser = async (user) => {
 // Fonction pour se connecter (POST)
 export const loginUser = async (username, password) => {
     try {
-        console.log('Envoi de la requête de connexion avec les données suivantes:', { username, password });
-
         // Effectuer la requête POST vers l'API
         const response = await api.post('/users/login', { username, password });
-
-        console.log('Réponse de la requête de connexion:', response);
 
         // Vérifiez si la connexion est réussie
         if (response.status === 200 && response.data === true) {
             // Sauvegarder le username dans AsyncStorage
             await AsyncStorage.setItem('username', username);
 
-            console.log('Connexion réussie, utilisateur sauvegardé.');
             return true; // Retourner `true` pour indiquer le succès
         } else {
             console.warn('Connexion échouée :', response.data);
@@ -60,7 +55,6 @@ export const getUserInfo = async (username = null) => {
             const response = await api.get('/users/getUser', {
                 params: { username }, // Transmettre le paramètre `username`
             });
-            console.log('Informations utilisateur récupérées :', response.data);
             return response.data; // Retourner les informations de l'utilisateur
         } else {
             console.error('Aucun username trouvé dans AsyncStorage.');
@@ -76,7 +70,6 @@ export const getUserInfo = async (username = null) => {
 // Fonction pour se déconnecter (supprimer le token)
 export const logoutUser = async () => {
     await AsyncStorage.removeItem('username'); // Supprimer le username
-    console.log('Utilisateur déconnecté avec succès.');
 };
 
 
