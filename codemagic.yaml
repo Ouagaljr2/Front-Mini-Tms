@@ -17,12 +17,6 @@ workflows:
         JAVA_VERSION: 17
         GRADLEW_PATH: android/gradlew
       flutter: stable
-      #android_signing:
-       # - keystore_reference: $CM_KEYSTORE_REFERENCE
-        #  keystore_password: $CM_KEYSTORE_PASSWORD
-        #  key_alias: $CM_KEY_ALIAS
-         # key_password: $CM_KEY_PASSWORD
-
     scripts:
       - name: Installer les dépendances
         script: npm install
@@ -46,4 +40,4 @@ workflows:
     publishing:
       email:
         recipients:
-          - "ton.email@example.com"
+          - "ouagal.mahamat@yahoo.com"

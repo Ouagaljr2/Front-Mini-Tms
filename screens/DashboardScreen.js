@@ -1,29 +1,34 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import { View, ScrollView, StyleSheet, ActivityIndicator } from 'react-native';
-import { Card, Title, Text, useTheme } from 'react-native-paper'; // Composants UI de React Native Paper
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons'; // Pour les icônes
+import { Card, Title, Text, useTheme } from 'react-native-paper';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useFocusEffect } from '@react-navigation/native'; // Importez useFocusEffect
 
 import { fetchDashboardStats } from '../services/dashboardService';
 
 const DashboardScreen = () => {
     const [stats, setStats] = useState({ totalDrivers: 0, totalVehicles: 0, totalTrips: 0 });
     const [loading, setLoading] = useState(true);
-    const { colors } = useTheme(); // Utilisation du thème pour les couleurs
+    const { colors } = useTheme();
 
-    useEffect(() => {
-        const loadStats = async () => {
-            try {
-                const data = await fetchDashboardStats();
-                setStats(data);
-            } catch (error) {
-                console.error('Erreur lors du chargement des statistiques:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
+    // Utilisez useFocusEffect pour recharger les données à chaque fois que l'écran est focalisé
+    useFocusEffect(
+        useCallback(() => {
+            const loadStats = async () => {
+                try {
+                    setLoading(true); // Activez le chargement
+                    const data = await fetchDashboardStats();
+                    setStats(data);
+                } catch (error) {
+                    console.error('Erreur lors du chargement des statistiques:', error);
+                } finally {
+                    setLoading(false); // Désactivez le chargement
+                }
+            };
 
-        loadStats();
-    }, []);
+            loadStats();
+        }, []) // Dépendances vides pour exécuter à chaque focalisation
+    );
 
     if (loading) {
         return (
@@ -82,7 +87,7 @@ const styles = StyleSheet.create({
     card: {
         marginBottom: 16,
         borderRadius: 8,
-        elevation: 3, // Ombre pour un effet 3D
+        elevation: 3,
     },
     cardContent: {
         alignItems: 'center',
@@ -95,10 +100,10 @@ const styles = StyleSheet.create({
     },
     cardValue: {
         fontSize: 24,
-        color: '#6200ee', // Couleur primaire
+        color: '#6200ee',
         marginTop: 5,
     },
-    loadinContainer: {
+    loadingContainer: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',

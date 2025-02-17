@@ -11,7 +11,6 @@ const VehiclesScreen = () => {
     const [vehicles, setVehicles] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [showForm, setShowForm] = useState(false);
-    const { colors } = useTheme(); // Utilisation du thème pour les couleurs
 
     const fetchVehicleList = async () => {
         const data = await fetchVehicles();
