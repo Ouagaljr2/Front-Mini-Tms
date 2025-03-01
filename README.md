@@ -1,6 +1,6 @@
 
 # Mini TMS - Frontend
-Ce dépôt contient le frontend de l'application Mini TMS, une solution de gestion pour une petite entreprise de transport. Le frontend est développé en React Native pour l'application mobile et en ReactJS pour l'interface web.
+Ce dépôt contient le frontend de l'application Mini TMS, une solution de gestion pour une petite entreprise de transport. Le frontend est développé en React Native pour une application mobile et une interface web.
 
 ## Fonctionnalités
 - **Gestion des conducteurs** : Ajout, modification, suppression et recherche de conducteurs.
