@@ -12,10 +12,8 @@ Ce dépôt contient le frontend de l'application Mini TMS, une solution de gesti
 - **Intégration API externe** : Calcul des distances avec Google Maps API.
 
 ## Technologies utilisées
-- **React Native** : Framework pour le développement d'applications mobiles multiplateformes.
-- **ReactJS** : Framework pour le développement d'interfaces web.
+- **React Native** : Framework pour le développement d'applications mobiles multiplateformes et le développement d'interfaces web.
 - **Codemagic** : Automatisation des pipelines CI/CD pour le déploiement mobile.
-- **Docker** : Conteneurisation de l'application.
 
 ## Structure du projet
 
