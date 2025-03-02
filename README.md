@@ -45,7 +45,7 @@ Ce dépôt contient le frontend de l'application Mini TMS, une solution de gesti
     ```
     Pour l'application mobile, utilisez :
     ```sh
-    npx react-native run-android
+    npm run android
     ```
     Vous trouverez alors sur votre emulateur l'applicaton lancer.
 
