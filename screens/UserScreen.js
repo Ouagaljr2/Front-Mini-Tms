@@ -75,7 +75,7 @@ const UserScreen = ({ onLoginSuccess, onLogout }) => {
                     <Text style={styles.infoText}>Nom d'utilisateur: {user.username}</Text>
                     <Text style={styles.infoText}>Rôle: {user.role}</Text>
 
-                    {user.role === 'Admin' && (
+                    {user.role.toUpperCase() === 'ADMIN' && (
                         <>
                             <TouchableOpacity style={styles.primaryButton} onPress={toggleCreateUserForm}>
                                 <Text style={styles.buttonText}>Ajouter un utilisateur</Text>
