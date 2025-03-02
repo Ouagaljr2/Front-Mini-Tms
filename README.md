@@ -33,25 +33,27 @@ Ce dépôt contient le frontend de l'application Mini TMS, une solution de gesti
 1. Clonez ce dépôt :
    ```sh
    git clone git@github.com:Ouagaljr2/Front-Mini-Tms.git
-   cd mini-tms-frontend
+   cd Front-Mini-Tms
     ```
 2.  Installez les dépendances :
     ```sh
     npm install
     ```
-3.  Configurez les variables d'environnement :
--   Créez un fichier .env à la racine du projet et ajoutez les variables suivantes :
+3.  Démarrez l'application :
     ```sh
-    REACT_APP_API_URL=http://localhost:8080
-    ```
-4.  Démarrez l'application :
-    ```sh
-    npm start
+    yarn start
     ```
     Pour l'application mobile, utilisez :
     ```sh
     npx react-native run-android
     ```
+    Vous trouverez alors sur votre emulateur l'applicaton lancer.
+
+##   Connexion à l'application
+Une fois que l'application est lancée, vous pouvez vous connecter en tant qu'Admin avec les informations suivantes :
+
+   -  Username: admin
+   -  Password: admin
 
 ##  CI/CD
 
